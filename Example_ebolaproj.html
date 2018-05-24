@@ -132,21 +132,46 @@ $(document).ready(function () {
 <li>the reproduction over a fixed time window</li>
 <li>project incidence forward from this time window</li>
 </ul>
-<div id="core-concepts" class="section level1">
-<h1>Core Concepts</h1>
-<p>From the previous lecture, we will further develop these concepts:</p>
-<ul>
-<li>Compartmental models</li>
-<li>Flow diagrams and writing down a model</li>
-<li>Natural history of Ebola</li>
-<li>Control strategies</li>
-<li>Introduction to model fitting</li>
-</ul>
-<div id="required-packages" class="section level2">
-<h2>Required packages</h2>
-<pre class="r"><code>install.packages(&quot;deSolve&quot;, dep=TRUE)
-install.packages(&quot;gridExtra&quot;, dep = TRUE)</code></pre>
+<p>In doing so, no assumptions are made about the epidemic curve previous to the time window considered. in other words, estimate of Rt and forward projection are not conditionnal on incidence prior to the begining of the time window.</p>
+<p>Therefore, in the inference, we infer the initial condition associated with a constant reproduction number that would have let to the incidence observed within the time window.</p>
+<p>the procedure can be applied to multiple locations at the same time. if multiple locations are inputed, the dynamics in each locations are assumed independant.</p>
+<div id="simulating-data" class="section level1">
+<h1>Simulating data</h1>
+<p>We first simulate data to be used for inference.</p>
+<div id="required-packages" class="section level3">
+<h3>Required packages</h3>
+<p>We use packages to simulate the data:</p>
+<pre class="r"><code>library(incidence)
+library(projections)
+## Warning: package 'projections' was built under R version 3.4.3
+library(epitrix)
+## Warning: package 'epitrix' was built under R version 3.4.3
+library(EpiEstim)</code></pre>
 </div>
+<div id="simulate-incidence" class="section level3">
+<h3>Simulate incidence</h3>
+<p>We simulate starting with 20 cases, and serial interval relevant for Ebola.</p>
+<p>We fix the reproduction number at 1.5 and simulate for 150 days and 50 locations.</p>
+<p>We then keep only the last 28 days (4 weeks) of simulation which will be our time window.</p>
+<p>Finally, we extract incidence for 10 locations only, making sure the incidence during that period is greater than 0.</p>
+</div>
+</div>
+<div id="infer-reproduction-number" class="section level1">
+<h1>Infer reproduction number</h1>
+<p>First we load the package and data to test:</p>
+<pre class="r"><code>rm(list=ls(all.names=T))
+library(ebolaproj)
+# load sample data to check
+load(file = 'simulated.RData')
+
+dim(incidence)
+## [1] 28 11</code></pre>
+<p>NOTE: incidence dataframe includes:</p>
+<ul>
+<li>1st column for dates and 10 locations</li>
+<li>28 rows: the time window during which we assume Rt is constant</li>
+</ul>
+<p>Then we run the MCMC procedure:</p>
 </div>
 <div id="about-this-document" class="section level1">
 <h1>About this document</h1>

@@ -1,6 +1,0 @@
-"0","incidence <- data.frame(date = as.Date('01/05/2018',format='%d/%m/%Y')+seq(0,19),
-                        I = tail(pred,4*7))
-"
-"2","Error in data.frame(date = as.Date(""01/05/2018"", format = ""%d/%m/%Y"") +  : 
-  arguments imply differing number of rows: 20, 28
-"
