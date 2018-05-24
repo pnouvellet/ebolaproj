@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: 'Ebola: Reproduction number and projection'\nauthor: \"Pierre Nouvellet & Anne Cori\"\ndate: '2018-05-24'\n---\n  \n  ```{r options, include = FALSE, message = FALSE, warning = FALSE, error = FALSE}\nlibrary(knitr)\n\nopts_chunk$set(collapse = TRUE)\n\n\n```\n\n\nThis file demonstrate how to use the ebolaproj package.\n\nThe package is used to estimate:\n\n- the reproduction over a fixed time window\n- project incidence forward from this time window\n\nIn doing so, no assumptions are made about the epidemic curve previous to the time window considered. in other words, estimate of Rt and forward projection are not conditionnal on incidence prior to the begining of the time window.\n\nTherefore, in the inference, we infer the initial condition associated with a constant reproduction number that would have let to the incidence observed within the time window.\n\nthe procedure can be applied to multiple locations at the same time. if multiple locations are inputed, the dynamics in each locations are assumed independant.\n\n\n# Simulating data\n\nWe first simulate data to be used for inference.\n\n## Required packages\n\nWe use package to simulate the data:\n```{r library, eval = TRUE, echo=TRUE}\nlibrary(incidence)\nlibrary(projections)\nlibrary(epitrix)\nlibrary(EpiEstim)\n```\n\n## Simulate incidence\n\nWe simulate starting with 20 cases, and serial interval relevant for Ebola.\nWe fix the reproduction number at 1.5 and simulate for 150 days and 50 locations.\nWe then keep only the last 28 days (4 weeks) of simulation which will be our time window.\nFinally, we only extract incidence for 10 locations only, making sure the incidence during that period is greater than 0.\n\n```{r simul, eval = TRUE, echo=FALSE}\ndat=rep(1,50)\n## simulate basic epicurvedat <- c(0, 2, 2, 3, 3, 5, 5, 5, 6, 6, 6, 6)\ni <- incidence(dat)  # 20 cases to start with\n# plot(i)\n\n# SI\nmean_SI <- 14.2\nCV_SI <- 9.6/14.2 # from http://www.nejm.org/doi/suppl/10.1056/NEJMc1414992/suppl_file/nejmc1414992_\n# params <- gamma_mucv2shapescale(mean_SI, CV_SI)\n# si <- distcrete(\"gamma\", interval = 1L,\n#                   shape = params$shape,\n#                   scale = params$scale, w = 0.5)\n# si$d(0:30) # problem of first one\nSItrunc <- 40\n# serial distribution\nSI_Distr <- sapply(0:SItrunc, function(e) DiscrSI(e,mean_SI,mean_SI*CV_SI) )\nSI_Distr <- SI_Distr / sum(SI_Distr)\n\n#simulate 40 days\npred <- project(x = i, R = 1.5, R_fix_within = TRUE,\n                si = SI_Distr, n_days = 200, n_sim = 50)\n\n\n# keep incidence of last 20 days\nincidence <- data.frame(date = as.Date('01/05/2018',format='%d/%m/%Y')+seq(0,4*7-1),\n                        I = tail(pred,4*7))\nf <- which(colSums(incidence[,-1])==0) # remove location with 0 cases in last 20 days\nincidence <- incidence[,-(f+1)]\n\n# incidence <- incidence[,1:2]\n# I_cum_hist <- colSums(head(pred,150-20))\n\nsave(incidence, file = 'Robjects/simulated.RData')\n```\n\n# About this document\n\n## Contributors\n\n- Pierre Nouvellet & Anne Cori: initial version\n\n\n## Legal stuff\n\n**License**: [CC-BY](https://creativecommons.org/licenses/by/3.0/)\n**Copyright**: Pierre Nouvellet & Anne Cori, 2018\n\n\n",
+    "created" : 1527171655712.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1829953271",
+    "id" : "1B306F14",
+    "lastKnownWriteTime" : 1527172357,
+    "last_content_update" : 1527173609497,
+    "path" : "~/GitHub/ebolaproj/ebolaproj/R/Example_ebolaproj.Rmd",
+    "project_path" : "R/Example_ebolaproj.Rmd",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
