@@ -1,7 +1,0 @@
-"0","SI <- SI_gamma_dist_EpiEstim(mu = mean_SI,
-                            cv = CV_SI, 
-                            SItrunc = 40)
-"
-"2","Error in SI_gamma_dist_EpiEstim(mu = mean_SI, cv = CV_SI, SItrunc = 40) : 
-  could not find function ""SI_gamma_dist_EpiEstim""
-"
