@@ -1,0 +1,14 @@
+"0","if (N_geo>1){
+  R_est <- apply(res$theta[,1:N_geo],2,
+                 quantile,c(.5,.025,.975))   # median and 95%CrI of Rs by locations
+  I0_est <- apply(res$theta[,(N_geo_1):(2*N_geo)],2,
+                  quantile,c(.5,.025,.975))   # median and 95%CrI of I0 
+  
+}else{
+  R_est <- quantile(res$theta[,1],c(.5,.025,.975))
+  I0_est <- quantile(res$theta[,2],c(.5,.025,.975))
+}
+"
+"2","Error in apply(res$theta[, (N_geo_1):(2 * N_geo)], 2, quantile, c(0.5,  : 
+  object 'N_geo_1' not found
+"

@@ -10,7 +10,7 @@
 #' 
 #' @param R0 vector of reproduction numbers per locations
 #'
-#' @export L log likelihood
+#' @details  L log likelihood
 # 
 
 Like1<-function(lambda,I,R0){

@@ -3,7 +3,7 @@
 #' run the MCMC to sample posterior of R and initial coniditions at each location 
 #' FYI: this is called internally by adapt_tuning
 #' 
-#' @param I the incidence for the time window during which we assume Rt to be constant.  
+#' @param incidence the incidence for the time window during which we assume Rt to be constant.  
 #'           I is a dataframe, first column are dates then incidence for all locations
 #'           nb of row is the size of time widows, dates must be sequential
 #' 
@@ -20,11 +20,11 @@
 #' @param mu0: initial conidtions to guaranty that if R=1, then we predict the number of cases in the future will stablise at the mean number of cases observed in the time window
 #'              mu0 is also used as the mean of the (exponential) prior for intial conditions estimated
 #' 
-#' @export res a list containing 2 matrices: theta: matrix of posterior samples
+#' @details  res a list containing 2 matrices: theta: matrix of posterior samples
 #'                      and logL: matrix of associated log-likelihood
 # 
 
-MCMC_iter <- function(I,N_geo,iter,theta0,s,SI,mu0){
+MCMC_iter <- function(incidence,N_geo,iter,theta0,s,SI,mu0){
   
   I <- incidence[,-1]     # remove dates (everything needs to be consecutive days)
   

@@ -12,7 +12,7 @@
 #' @param others same as in MCMC_iter function
 #'
 #' 
-#' @export res list of 2 vectors: theta0: posterior samples at the last iterations
+#' @details res list of 2 vectors: theta0: posterior samples at the last iterations
 #'                       sigma: new variance for the proposal distribution
 # 
 ## adaptative tuning
@@ -26,7 +26,7 @@ adapt_tuning <- function(repli,I,N_geo,within_iter,theta0,sigma,SI,mu0){
   new_sigma <- sigma
   for (i in 1:repli){
     # run MCMC with wthin_iter iterations
-    res <- MCMC_iter(I = incidence,
+    res <- MCMC_iter(incidence = I ,
                      N_geo = N_geo,
                      iter = within_iter,
                      theta0 = theta0,

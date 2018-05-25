@@ -39,6 +39,7 @@ library(incidence)
 library(projections)
 library(epitrix)
 library(EpiEstim)
+library(Hmisc)
 ```
 
 
@@ -54,7 +55,8 @@ We then keep only the last 28 days (4 weeks) of simulation which will be our tim
 Finally, we extract incidence for 10 locations only, making sure the incidence during that period is greater than 0.
 
 ```{r simul, eval = TRUE, echo=FALSE}
-dat=rep(1,5)
+I0 <- 5
+dat=rep(1,I0)
 ## simulate basic epicurvedat <- c(0, 2, 2, 3, 3, 5, 5, 5, 6, 6, 6, 6)
 i <- incidence(dat)  # 20 cases to start with
 # plot(i)
@@ -73,7 +75,8 @@ SI_Distr <- sapply(0:SItrunc, function(e) DiscrSI(e,mean_SI,mean_SI*CV_SI) )
 SI_Distr <- SI_Distr / sum(SI_Distr)
 
 #simulate 40 days
-pred <- project(x = i, R = c(1.5,1.5), R_fix_within = TRUE,
+R <- 1.5
+pred <- project(x = i, R = rep(R,2), R_fix_within = TRUE,
                 si = SI_Distr, n_days = 150, n_sim = 50)
 
 
@@ -95,6 +98,9 @@ save(incidence, file = 'simulated.RData')
 First we load the package and data to test:
 ```{r library2, eval = TRUE, echo=TRUE}
 rm(list = as.vector(ls()))
+
+devtools::load_all('.')
+
 
 library(ebolaproj)
 # load sample data to check
@@ -123,7 +129,7 @@ SI <- SI_gamma_dist_EpiEstim(mu = mean_SI,
                             SItrunc = 40)
 # final number of MCMC iterations (the whole thing, 
 # here with 10 locations runs in ~3.5mins) )
-rep <- 5e3                             
+rep <- 2e3                             
 sigma_prop <- rep(0.1,N_geo*2)         # initial proposal variances (they are now tuned!)
 # initial incidence conditions 
 if ( N_geo>1 ){
@@ -140,6 +146,8 @@ if ( N_geo>1 ){
 theta0 <- c(rep(1,N_geo), mu0)          # initial parameter R=1 (time # of locations, and initial number of cases in the past)  
 
 ```
+
+
 
 ```{r test,eval=FALSE,echo=FALSE}
 ##########################################################
@@ -158,6 +166,21 @@ res1 <- MCMC_iter(I = incidence,
 We then run the MCMC:
 
 ```{r MCMC, eval=TRUE, echo=TRUE}
+
+res <- MCMC_full(I = incidence,
+                 N_geo = N_geo,
+                 iter = rep,
+                 theta0 = theta0,
+                 s = sigma_prop,
+                 SI = SI,
+                 mu0 = mu0,
+                 repli_adapt = 10,
+                 within_iter = rep/10)
+```
+
+```{r breakdown, echo=FALSE, eval=FALSE}
+##############################################
+# alternative using internal functions
 res0 <- adapt_tuning(repli = 10,
                      I = incidence,
                      N_geo = N_geo,
@@ -171,12 +194,12 @@ res0 <- adapt_tuning(repli = 10,
 # do again using parameter value from the last iteration of the previous MCMC
 # repeat 10 times
 # from experience, this is enough to tunes proposal variances well, but worth checking
-# see below for final acceptance rate output 
+# see below for final acceptance rate output
 # see Rscript/MCMC_Rt_2018.R for full function
 
 print('halfway!')             # message halfway through (effectively, including tuning, we do 2xrep iterations)
 
-res <- MCMC_iter(I = incidence,
+res <- MCMC_iter(incidence = incidence,
                  N_geo = N_geo,
                  iter = rep,
                  theta0 = res0$theta0,
@@ -187,7 +210,7 @@ res <- MCMC_iter(I = incidence,
 # FYI: this is called internally by adapt_tuning
 # see Rscript/MCMC_Rt_2018.R for full function
 # needs:
-# I: the incidence for the time window during which we assume Rt to be constant. 
+# I: the incidence for the time window during which we assume Rt to be constant.
 # N_geo: the number of locations
 # iter: the number of iteration for the MCMC
 # theta0: inital parameters, here taken from the last MCMC iteration after tuning (save some burn-in)
@@ -195,7 +218,7 @@ res <- MCMC_iter(I = incidence,
 # SI: the serial interval(use SI_gamma_dist_EpiEstim to define), or need to be a list with vector dist for the daily distribution and SItrunc: an integer for the threshold of serial interval, if SItrunc=40, then dist is 41 element long to include day 0
 # mu0: initial conidtions to guaranty that if R=1, then we predict the number of cases in the future will stablise at the mean number of cases observed in the time window
 # mu0 is also used as the mean of the (exponential) prior for intial conditions estimated
-
+#################################################
 ```
 
 We can then check the traces of parameters and likelihood, acceptances, and get quantile for Rt.
@@ -211,14 +234,76 @@ for (i in 1:N_geo) plot(res$theta[,i])              # of R's
 for (i in 1:N_geo) plot(res$theta[,N_geo+i])        # of initial conditions
 
 if (N_geo>1){
-  apply(res$theta[,1:N_geo],2,quantile,c(.5,.025,.975))   # median and 95%CrI of Rs by locations
+  R_est <- apply(res$theta[,1:N_geo],2,
+                 quantile,c(.5,.025,.975))   # median and 95%CrI of Rs by locations
+  I0_est <- apply(res$theta[,(N_geo+1):(2*N_geo)],2,
+                  quantile,c(.5,.025,.975))   # median and 95%CrI of I0 
+  
 }else{
-  quantile(res$theta[,1],c(.5,.025,.975))
+  R_est <- quantile(res$theta[,1],c(.5,.025,.975))
+  I0_est <- quantile(res$theta[,2],c(.5,.025,.975))
 }
-# save.image('test_on_simulation1.RData')             # saving so far
+save.image('test_on_simulation1.RData')             # saving so far
 
 ```
 
+We Check the estimates:
+
+```{r checkest, echo = TRUE, eval = TRUE}
+layout(matrix(1:2,1,2,byrow = TRUE))
+errbar(1:N_geo,R_est[1,],R_est[2,],R_est[3,],
+       xlab = 'location', ylab = 'R',ylim = c(0,3), bty = 'n')
+lines(c(1,N_geo),rep(R,2), col = 'red')
+
+
+```
+
+# Project forward
+
+Once we have inferred the reproduction numbers in the time window, and the initial conditions, we can use the same model to project forward.
+
+We start the projection from the begining of the time window, to reflect incertainty in the initial conditions.
+
+If the time window was 4 weeks, and we want to project for 4 weeks after that, then the 'week_forward' needs to be 4+4 in the function 'Sim_Poiss'.
+
+```{r forward, eval=TRUE , echo= TRUE}
+# forward projection
+Nsim <- 1e3                                           # number of simulation to get median and 95%CrI predictions
+I_pred <- Proj_Pois(Results = res ,
+                   Nsim = Nsim, 
+                   week_forward = 4+4,
+                   N_geo = N_geo,
+                   SI = SI)
+# function to project forward, see Rscript/useful_functions.R
+# needs the parameters estimated (Results)
+# number of simulations
+# week_forward: number of week projected from the START of the time window, SO: includes the period of time
+# for which we have data!!! e.g. if we have 2 weeks of data and want to project for the 4 weeks 
+# after that, week_forward should be 6.
+# require number of locations + serial interval
+```
+
+We finally plot the projections:
+
+```{r plotproj, eval=TRUE, echo = TRUE}
+
+# plot the observed incidence in the time window of interest and the median and 95%CrI predictions
+layout(matrix(1:N_geo,2,ceiling(N_geo/2),byrow = TRUE))
+for(i in 1:N_geo){
+  CI_pred <- apply(I_pred[,i,101:dim(I_pred)[3]],2,quantile,c(.5,.025,.975))
+  plot(1:nrow(incidence),incidence[,1+i],
+       xlim=c(0,ncol(CI_pred)), 
+       ylim = c(0,1+max(c(incidence[,1+i],as.vector(CI_pred)))),
+       xlab = 'time', ylab = 'incidence')
+  
+  x <- 1:ncol(CI_pred)
+  lines(x,CI_pred[1,],col='blue',lwd=2)
+  polygon(c(x,rev(x)), c(CI_pred[2,],rev(CI_pred[3,])), 
+          col = rgb(0,0,1,.2), border = FALSE )
+}
+
+
+```
 
 # About this document
 

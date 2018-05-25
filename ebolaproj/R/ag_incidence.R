@@ -5,7 +5,7 @@
 #' @param I matrix of incidence per unit time (nrow: locations, ncol: nb of time points).
 #' @param delta integer, period over which to aggregate, e.g. if I is daily incidence, and delta is 7, the function return weekly incidence.
 #'
-#' @export
+#' @details
 # 
 # agregate an incidence for periods of delta days, it cuts the most recent days if incidence has not the exact number of days require
 ag_incidence <- function(I,delta){

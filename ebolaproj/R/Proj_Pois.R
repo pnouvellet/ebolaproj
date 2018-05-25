@@ -16,13 +16,13 @@
 #' 
 #' @param SI serial interval, output from SI_gamma_dist_EpiEstim function
 #'
-#' @export I_predict an array of size [Nsim,N_geo,7*weekforward] of simulated incidences
+#' @details I_predict an array of size [Nsim,N_geo,7*weekforward] of simulated incidences
 # 
 # agregate an incidence for periods of delta days, it cuts the most recent days if incidence has not the exact number of days require
 # 
 Proj_Pois <- function(Results,Nsim,week_forward,N_geo,SI){
   
-  if (Nsim<=nrow(Results$theta)) warning('Nsim must be smaller than size of posterior samples')
+  if (Nsim>nrow(Results$theta)) warning('Nsim must be smaller than size of posterior samples')
 
   # allocate output
   I_predict <- array(data = 0, dim = c(Nsim,N_geo,7*week_forward+100))

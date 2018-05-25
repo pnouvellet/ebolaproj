@@ -10,7 +10,7 @@
 #' @param it integer, nro of theta
 #'
 #' 
-#' @export lambda incidence weighted by serial interval
+#' @details lambda incidence weighted by serial interval
 # 
 
 adapt <- function(theta,s,it){

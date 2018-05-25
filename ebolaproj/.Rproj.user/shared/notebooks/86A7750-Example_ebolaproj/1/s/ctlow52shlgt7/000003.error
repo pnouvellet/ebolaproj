@@ -1,0 +1,1 @@
+{"frames":[{"character_number":3,"end_character_number":43,"end_line_number":5,"file":"","func":"apply(res$theta[, (N_geo_1):(2 * N_geo)], 2, quantile, c(0.5, \n    0.025, 0.975))","line_number":4}],"message":"Error in apply(res$theta[, (N_geo_1):(2 * N_geo)], 2, quantile, c(0.5,  : \n  object 'N_geo_1' not found\n"}

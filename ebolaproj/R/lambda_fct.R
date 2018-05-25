@@ -15,7 +15,7 @@
 #' @param SItrunc integer, threshold of serial interval distribution (see SI_gamma_dist_EpiEstim)
 #'
 #' 
-#' @export lambda incidence weighted by serial interval
+#' @details lambda incidence weighted by serial interval
 # 
 
 lambda_fct<-function(param, I, N_l, ws, SItrunc){

@@ -5,7 +5,7 @@
 #' @param input you should always document the paramters.
 #'              Including the expected data type.
 #'
-#' @export
+#' @details
 # SI
 SI_gamma_dist_EpiEstim <- function(mu,cv,SItrunc){
   SI_Distr <- sapply(0:SItrunc, function(e) DiscrSI(e,mean_SI,mean_SI*CV_SI) )
