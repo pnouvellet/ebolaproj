@@ -11,7 +11,8 @@
 #' @param R0 vector of reproduction numbers per locations
 #'
 #' @details  L log likelihood
-# 
+#' @export
+#' 
 
 Like1<-function(lambda,I,R0){
   R <- R0%*%matrix(1,1,ncol(I))

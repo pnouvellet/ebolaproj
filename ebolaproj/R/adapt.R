@@ -11,7 +11,7 @@
 #'
 #' 
 #' @details lambda incidence weighted by serial interval
-# 
+#' @export
 
 adapt <- function(theta,s,it){
   Acc <- colSums(diff(theta)!=0)/(it-1)   # current acceptance rate

@@ -22,7 +22,8 @@
 #' 
 #' @details  res a list containing 2 matrices: theta: matrix of posterior samples
 #'                      and logL: matrix of associated log-likelihood
-# 
+#' @export
+#' 
 
 MCMC_iter <- function(incidence,N_geo,iter,theta0,s,SI,mu0){
   

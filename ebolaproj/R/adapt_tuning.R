@@ -14,7 +14,8 @@
 #' 
 #' @details res list of 2 vectors: theta0: posterior samples at the last iterations
 #'                       sigma: new variance for the proposal distribution
-# 
+#' @export
+#' 
 ## adaptative tuning
 # tune proposal and give good initial values to start 'proper' MCMC
 # repli: number of time the variance of the proposal is tuned (10 tend to be ok)

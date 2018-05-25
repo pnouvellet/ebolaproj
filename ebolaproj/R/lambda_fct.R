@@ -16,7 +16,8 @@
 #'
 #' 
 #' @details lambda incidence weighted by serial interval
-# 
+#' @export
+#' 
 
 lambda_fct<-function(param, I, N_l, ws, SItrunc){
   
