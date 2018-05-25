@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "#' SerialInterval\n#'\n#' This is an example of how to create and document exported functions.\n#'\n#' @param input you should always document the paramters.\n#'              Including the expected data type.\n#'\n#' @export\n#' \n# SI\nSI_gamma_dist_EpiEstim <- function(mu,cv,SItrunc){\n  SI_Distr <- sapply(0:SItrunc, function(e) EpiEstim::DiscrSI(e,mean_SI,mean_SI*CV_SI) )\n  SI_Distr <- SI_Distr / sum(SI_Distr)\n  return(list(dist = SI_Distr, SItrunc = SItrunc))\n}\n\n#' You can also document internal package function with roxygen\n#'\n#' Just make sure you add 'noRd' so no latex help files are being created.\n#' @noRd\nsome_internal_function <- function() {\n  NA\n}\n\n",
+    "created" : 1527245185548.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "342610530",
+    "id" : "E75827D4",
+    "lastKnownWriteTime" : 1527245201,
+    "last_content_update" : 1527245201245,
+    "path" : "~/GitHub/ebolaproj/ebolaproj/R/SI_gamma_dist_EpiEstim.R",
+    "project_path" : "R/SI_gamma_dist_EpiEstim.R",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
