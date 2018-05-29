@@ -89,7 +89,7 @@ if (length(f)>0) incidence <- incidence[,-(f+1)]
 incidence <- incidence[,1:11]
 # I_cum_hist <- colSums(head(pred,150-20))
 
-save(incidence, file = 'simulated.RData')
+save(incidence,R, file = 'simulated.RData')
 ```
 
 
@@ -128,7 +128,7 @@ SI <- SI_gamma_dist_EpiEstim(mu = mean_SI,
                             SItrunc = 40)
 # final number of MCMC iterations (the whole thing, 
 # here with 10 locations runs in ~3.5mins) )
-rep <- 2e3                             
+rep <- 2e2                             
 sigma_prop <- rep(0.1,N_geo*2)         # initial proposal variances (they are now tuned!)
 # initial incidence conditions 
 if ( N_geo>1 ){
@@ -269,7 +269,8 @@ If the time window was 4 weeks, and we want to project for 4 weeks after that, t
 # forward projection
 Nsim <- 1e3                                           # number of simulation to get median and 95%CrI predictions
 I_pred <- Proj_Pois(Results = res ,
-                   Nsim = Nsim, 
+                   NR_samples = 100, 
+                   Nsim_per_samples = 100,
                    week_forward = 4+4,
                    N_geo = N_geo,
                    SI = SI)
