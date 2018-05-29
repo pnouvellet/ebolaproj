@@ -151,7 +151,7 @@ theta0 <- c(rep(1,N_geo), mu0)          # initial parameter R=1 (time # of locat
 ```{r test,eval=FALSE,echo=FALSE}
 ##########################################################
 # test just me testing the MCMC_iter without tuning
-res1 <- MCMC_iter(incidence = I,
+res1 <- MCMC_iter(incidence = incidence,
                   N_geo = N_geo,
                   iter = 1e2,
                   theta0 = theta0,
