@@ -4,14 +4,17 @@
 \alias{Proj_Pois}
 \title{Project forward}
 \usage{
-Proj_Pois(Results, Nsim, week_forward, N_geo, SI)
+Proj_Pois(Results, NR_samples, Nsim_per_samples, week_forward, N_geo, SI)
 }
 \arguments{
 \item{Results}{list conatining the results of the MCMC (e.g. from MCMC_RtProj function), contains
 'theta' a matrix for the posterior samples of Rt and initial conditions (ncol: twice number of locations)
 with Rts in first column followed by initial conditions.}
 
-\item{Nsim}{integer, number of simulation - has to be smaler than number of posterior samples}
+\item{NR_samples}{integer, number of Rt sampled - has to be smaler than number of posterior samples}
+
+\item{Nsim_per_samples}{integer, number of of simulation per Rt sampled (NR_samples). the total number of 
+simulated trajectory is (NR_samples x Nsim_per_samples)}
 
 \item{week_forward}{integer, number of week simulated forward - this include the time window used for inference, so
 if 2 weeks were used to infer Rt, and we want projection 2 weeks after that, week_forward=4}
