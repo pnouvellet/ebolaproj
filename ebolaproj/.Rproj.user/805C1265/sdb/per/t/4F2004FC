@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "#' Project forward\n#'\n#' Project forward according to model\n#' \n#' \n#' @param Results list conatining the results of the MCMC (e.g. from MCMC_RtProj function), contains\n#'                  'theta' a matrix for the posterior samples of Rt and initial conditions (ncol: twice number of locations)\n#'                  with Rts in first column followed by initial conditions.   \n#'                  \n#' @param NR_samples integer, number of Rt sampled - has to be smaler than number of posterior samples\n#' \n#' @param Nsim_per_samples integer, number of of simulation per Rt sampled (NR_samples). the total number of \n#'                           simulated trajectory is (NR_samples x Nsim_per_samples)\n#' \n#' @param week_forward integer, number of week simulated forward - this include the time window used for inference, so\n#'                  if 2 weeks were used to infer Rt, and we want projection 2 weeks after that, week_forward=4\n#'                  \n#' @param N_geo integer, number of locations\n#' \n#' @param SI serial interval, output from SI_gamma_dist_EpiEstim function\n#'\n#' @details I_predict an array of size [Nsim,N_geo,7*weekforward] of simulated incidences\n#' @export\n#' \n# agregate an incidence for periods of delta days, it cuts the most recent days if incidence has not the exact number of days require\n# \nProj_Pois <- function(Results, NR_samples, Nsim_per_samples , week_forward, N_geo, SI){\n  \n  if (NR_samples>nrow(Results$theta)) warning('Nsim must be smaller than size of posterior samples')\n\n  Nsim <- NR_samples * Nsim_per_samples\n  # allocate output\n  I_predict <- array(data = 0, dim = c(Nsim,N_geo,7*week_forward+100))\n  \n  fR <- sample(x = 1:nrow(Results$theta), size = NR_samples, replace = FALSE)   # samples for the posterior\n  R0 <- Results$theta[fR,1:N_geo]                                         # R samples\n  Ini <- Results$theta[fR,(N_geo+1):(2*N_geo)]                            # initial conditions samples\n  if (N_geo == 1){\n    R0 <- matrix(R0,Nsim)\n    Ini <- matrix(Ini,Nsim)\n  }\n  R0 <- matrix(rep(R0, each = Nsim_per_samples), nrow = Nsim, ncol = N_geo)\n  Ini <- matrix(rep(Ini, each = Nsim_per_samples), nrow = Nsim, ncol = N_geo)\n\n    ws <- rev(SI$dist)                                                      # reversed serial interval\n  \n  # reconstruct initial conditions prior to time window \n  for (k in 1:Nsim){                                                      # for each simulations\n    I0 <- matrix(0,N_geo,100)             # allocate\n    I0[,1] <- Ini[k,]                     # first value = sample of initial conditions posterior\n    for (i in 2:100){\n      f <- max(c(1,(i-SI$SItrunc)))       # first few days, serial interval is left censored\n      I0[,i] <- R0[k,]*(I0[,f:i]%*%ws[((SI$SItrunc+1)-(i-f)):(SI$SItrunc+1)])  # mean expected number of cases\n    }        \n    \n    I=cbind(I0,matrix(0,N_geo,7*week_forward))      \n    # for the time window and beyond get the mean expect number of cases day after day and draw from Poisson\n    for (i in (100+1):ncol(I)){\n      lambda=I[,(i-SI$SItrunc):i]%*%ws\n      I[,i]=rpois(N_geo,R0[k,]*lambda)\n    }\n    I_predict[k,,] <- I\n  }\n  return(I_predict)\n\n  \n}\n\n#' You can also document internal package function with roxygen\n#'\n#' Just make sure you add 'noRd' so no latex help files are being created.\n#' @noRd\nsome_internal_function <- function() {\n  NA\n}\n\n",
+    "created" : 1527757412956.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "486208190",
+    "id" : "4F2004FC",
+    "lastKnownWriteTime" : 1527757361,
+    "last_content_update" : 1527757361,
+    "path" : "D:/Work/github/ebolaproj/ebolaproj/R/Proj_Pois.R",
+    "project_path" : "R/Proj_Pois.R",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

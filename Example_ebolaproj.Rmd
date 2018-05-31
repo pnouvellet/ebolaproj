@@ -267,10 +267,9 @@ If the time window was 4 weeks, and we want to project for 4 weeks after that, t
 
 ```{r forward, eval=TRUE , echo= TRUE}
 # forward projection
-Nsim <- 1e3                                           # number of simulation to get median and 95%CrI predictions
 I_pred <- Proj_Pois(Results = res ,
-                   NR_samples = 100, 
-                   Nsim_per_samples = 100,
+                   NR_samples = 10, 
+                   Nsim_per_samples = 10,
                    week_forward = 4+4,
                    N_geo = N_geo,
                    SI = SI)
@@ -281,6 +280,8 @@ I_pred <- Proj_Pois(Results = res ,
 # for which we have data!!! e.g. if we have 2 weeks of data and want to project for the 4 weeks 
 # after that, week_forward should be 6.
 # require number of locations + serial interval
+temp <- as.matrix(t(I_pred[,1,101:156]))
+I2 <- build_projections(t(temp), dates = NULL, cumulative = FALSE)
 ```
 
 We finally plot the projections:
