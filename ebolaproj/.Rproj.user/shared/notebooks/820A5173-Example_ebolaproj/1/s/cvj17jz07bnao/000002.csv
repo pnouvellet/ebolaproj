@@ -1,0 +1,147 @@
+"0","# number of locations"
+"0","N_geo <- ncol(incidence)-1                                  "
+"0","# Serial interval "
+"0","mean_SI <- 14.2"
+"0","CV_SI <- 9.6/14.2 # from http://www.nejm.org/doi/suppl/10.1056/NEJMc1414992/suppl_file/nejmc1414992_"
+"0","SI <- SI_gamma_dist_EpiEstim(mu = mean_SI,"
+"0","                            cv = CV_SI, "
+"0","                            SItrunc = 40)"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"2","'EpiEstim::DiscrSI' is deprecated.
+Use 'discr_si' instead.
+See help(""Deprecated"")"
+"0","# final number of MCMC iterations (the whole thing, "
+"0","# here with 10 locations runs in ~3.5mins) )"
+"0","rep <- 2e2                             "
+"0","sigma_prop <- rep(0.1,N_geo*2)         # initial proposal variances (they are now tuned!)"
+"0","# initial incidence conditions "
+"0","if ( N_geo>1 ){"
+"0","  mu0 <- colMeans(incidence[,-1])*SI$SItrunc  "
+"0","}else{"
+"0","  mu0 <- mean(incidence[,-1])*SI$SItrunc  "
+"0","}"
+"0","# initially, we assume R=1 and choose initial condition accordingly, i.e. with mu0 case and R=1 "
+"0","# we expect the number of daily cases to stabilised at the mean of the observed incidence in the "
+"0","# time window of interest"
+"0","# this is use for the prior of initial number of cases, i.e. as the mean of an exponential distribution"
+"0","# in practice, the mu0 cases will happen 100 days before the start of the time windows"
+"0","theta0 <- c(rep(1,N_geo), mu0)          # initial parameter R=1 (time # of locations, and initial number of cases in the past)  "

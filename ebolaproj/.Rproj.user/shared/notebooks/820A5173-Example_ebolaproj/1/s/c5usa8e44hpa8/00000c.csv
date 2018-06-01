@@ -1,0 +1,5 @@
+"0","I2 <- build_projections(t(temp), dates = NULL, cumulative = FALSE)
+"
+"2","Error in seq_len(nrow) : 
+  argument must be coercible to non-negative integer
+"
