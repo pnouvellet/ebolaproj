@@ -3,7 +3,6 @@ Title: An expressive Title in Titlecase
 Version: 0.0.1.9000
 Authors@R: person("Your", "Name", email = "your.name@localhost", role = c("aut", "cre"))
 Description: Please add a description.
-Depends: R (>= 3.4.2)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
