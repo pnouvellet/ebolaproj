@@ -1,6 +1,6 @@
 #' Project forward
 #'
-#' Project forward according to model
+#' Project forward according to model (~efficient loop)
 #' 
 #' 
 #' @param Results list conatining the results of the MCMC (e.g. from MCMC_RtProj function), contains

@@ -24,7 +24,7 @@ if 2 weeks were used to infer Rt, and we want projection 2 weeks after that, wee
 \item{SI}{serial interval, output from SI_gamma_dist_EpiEstim function}
 }
 \description{
-Project forward according to model
+Project forward according to model (~efficient loop)
 }
 \details{
 I_predict an array of size [Nsim,N_geo,7*weekforward] of simulated incidences
