@@ -5,7 +5,7 @@
 \title{Project forward}
 \usage{
 Proj_Pois_incl_trusted(Results, NR_samples, Nsim_per_samples, week_forward,
-  N_geo, SI, I)
+  N_geo, SI, Iobs)
 }
 \arguments{
 \item{Results}{list conatining the results of the MCMC (e.g. from MCMC_RtProj function), contains
@@ -23,7 +23,7 @@ simulated trajectory is (NR_samples x Nsim_per_samples)}
 
 \item{SI}{serial interval, output from SI_gamma_dist_EpiEstim function}
 
-\item{I}{incidence without dates (nrow=nb of days)}
+\item{Iobs}{incidence without dates (nrow=nb of days)}
 }
 \description{
 Project forward according to model (~efficient loop)

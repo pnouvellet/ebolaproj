@@ -5,7 +5,7 @@
 \title{Project forward}
 \usage{
 Proj_NegBin_incl_trusted(Results, Overdispersion, NR_samples, Nsim_per_samples,
-  week_forward, N_geo, SI, I)
+  week_forward, N_geo, SI, Iobs)
 }
 \arguments{
 \item{Results}{list conatining the results of the MCMC (e.g. from MCMC_RtProj function), contains
@@ -26,7 +26,7 @@ if 2 weeks were used to infer Rt, and we want projection 2 weeks after that, wee
 
 \item{SI}{serial interval, output from SI_gamma_dist_EpiEstim function}
 
-\item{I}{incidence without dates (nrow=nb of days)}
+\item{Iobs}{incidence without dates (nrow=nb of days)}
 }
 \description{
 Project forward according to NegBin
