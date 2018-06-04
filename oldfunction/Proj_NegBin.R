@@ -27,7 +27,7 @@
 #' 
 # agregate an incidence for periods of delta days, it cuts the most recent days if incidence has not the exact number of days require
 # 
-Proj_NegBin2 <- function(Results, Overdispersion, NR_samples, Nsim_per_samples , week_forward, N_geo, SI){
+Proj_NegBin <- function(Results, Overdispersion, NR_samples, Nsim_per_samples , week_forward, N_geo, SI){
   
   if (NR_samples>nrow(Results$theta)) warning('Nsim must be smaller than size of posterior samples')
 
@@ -48,56 +48,28 @@ Proj_NegBin2 <- function(Results, Overdispersion, NR_samples, Nsim_per_samples ,
     ws <- rev(SI$dist)                                                      # reversed serial interval
   
   # reconstruct initial conditions prior to time window 
-    # loop over Nsim
-  # for (k in 1:Nsim){                                                      # for each simulations
-  #   I0 <- matrix(0,N_geo,100)             # allocate
-  #   I0[,1] <- Ini[k,]                     # first value = sample of initial conditions posterior
-  #   for (i in 2:100){
-  #     f <- max(c(1,(i-SI$SItrunc)))       # first few days, serial interval is left censored
-  #     I0[,i] <- R0[k,]*(I0[,f:i]%*%ws[((SI$SItrunc+1)-(i-f)):(SI$SItrunc+1)])  # mean expected number of cases
-  #   }        
-  #   
-  #   I <- cbind(I0,matrix(0,N_geo,7*week_forward))      
-  #   # for the time window and beyond get the mean expect number of cases day after day and draw from Poisson
-  #   for (i in (100+1):ncol(I)){
-  #     lambda <- I[,(i-SI$SItrunc):i]%*%ws
-  #     Overdispersion_adj <- Overdispersion * lambda
-  #     idx <- which(lambda == 0)
-  #     Overdispersion_adj[idx] <- 1
-  #     # # poisson sampling
-  #     # I[,i] <- rpois(N_geo,R0[k,]*lambda)
-  #     # neg bin sampling
-  #     I[,i] <- stats::rnbinom(N_geo, size = Overdispersion_adj, mu = R0[k,] * lambda)
-  #   }
-  #   I_predict[k,,] <- I
-  # }
-
-    # do loop over N_geo  
-    for (k in 1:N_geo){                                                      # for each simulations
-      I0 <- matrix(0,Nsim, 100)             # allocate
-      I0[,1] <- Ini[,k]                     # first value = sample of initial conditions posterior
-      for (i in 2:100){
-        f <- max(c(1,(i-SI$SItrunc)))       # first few days, serial interval is left censored
-        I0[,i] <- R0[,k]*(I0[,f:i]%*%ws[((SI$SItrunc+1)-(i-f)):(SI$SItrunc+1)])  # mean expected number of cases
-      }        
-      
-      I=cbind(I0,matrix(0,Nsim,7*week_forward))      
-      # for the time window and beyond get the mean expect number of cases day after day and draw from Poisson
-      for (i in (100+1):ncol(I)){
-        # lambda=I[,(i-SI$SItrunc):i]%*%ws
-        # I[,i]=rpois(Nsim,R0[,k]*lambda)
-
-        lambda <- I[,(i-SI$SItrunc):i]%*%ws
-        Overdispersion_adj <- Overdispersion * lambda
-        idx <- which(lambda == 0)
-        Overdispersion_adj[idx] <- 1
-        I[,i] <- stats::rnbinom(Nsim, size = Overdispersion_adj, mu = R0[,k] * lambda)
-        
-      }
-      I_predict[,k,] <- I
+  for (k in 1:Nsim){                                                      # for each simulations
+    I0 <- matrix(0,N_geo,100)             # allocate
+    I0[,1] <- Ini[k,]                     # first value = sample of initial conditions posterior
+    for (i in 2:100){
+      f <- max(c(1,(i-SI$SItrunc)))       # first few days, serial interval is left censored
+      I0[,i] <- R0[k,]*(I0[,f:i]%*%ws[((SI$SItrunc+1)-(i-f)):(SI$SItrunc+1)])  # mean expected number of cases
+    }        
+    
+    I <- cbind(I0,matrix(0,N_geo,7*week_forward))      
+    # for the time window and beyond get the mean expect number of cases day after day and draw from Poisson
+    for (i in (100+1):ncol(I)){
+      lambda <- I[,(i-SI$SItrunc):i]%*%ws
+      Overdispersion_adj <- Overdispersion * lambda
+      idx <- which(lambda == 0)
+      Overdispersion_adj[idx] <- 1
+      # # poisson sampling
+      # I[,i] <- rpois(N_geo,R0[k,]*lambda)
+      # neg bin sampling
+      I[,i] <- stats::rnbinom(N_geo, size = Overdispersion_adj, mu = R0[k,] * lambda)
     }
-    
-    
+    I_predict[k,,] <- I
+  }
   return(I_predict)
 
   
