@@ -1,3 +1,0 @@
-"0","layout(matrix(1:2,1,2,byrow = TRUE))"
-"0","errbar(1:N_geo,R_est[1,],R_est[2,],R_est[3,],"
-"0","       xlab = 'location', ylab = 'R',ylim = c(0,3), bty = 'n')"

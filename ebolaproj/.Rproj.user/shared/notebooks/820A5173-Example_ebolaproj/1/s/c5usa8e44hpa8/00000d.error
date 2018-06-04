@@ -1,1 +1,0 @@
-{"frames":[{"character_number":0,"end_character_number":0,"end_line_number":0,"file":"","func":"build_projections(t(temp), dates = NULL, cumulative = FALSE)","line_number":0}],"message":"Error in seq_len(nrow) : \n  argument must be coercible to non-negative integer\n"}
