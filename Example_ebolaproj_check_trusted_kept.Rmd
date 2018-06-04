@@ -107,6 +107,7 @@ library(ebolaproj)
 load(file = 'simulated.RData')
 
 dim(incidence)
+incidence <- incidence[,1:2]
 set.seed(1)
 ```
 
@@ -287,7 +288,7 @@ I_pred <- Proj_Pois_incl_trusted(Results = res ,
                    Nsim_per_samples = 10,
                    week_forward = 4+4,
                    N_geo = N_geo,
-                   SI = SI, I= incidence[,-1])
+                   SI = SI, Iobs = incidence[,-1])
 
 apply(I_pred[,1,],2, quantile,c(.5,.0275,.975))
 

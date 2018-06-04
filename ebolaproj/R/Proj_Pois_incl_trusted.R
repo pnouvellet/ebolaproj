@@ -33,7 +33,12 @@ Proj_Pois_incl_trusted <- function(Results, NR_samples, Nsim_per_samples , week_
   
   Nsim <- NR_samples * Nsim_per_samples
   # allocate output
-  I_predict <- array(data = 0, dim = c(Nsim,N_geo,7*week_forward+100+nrow(Iobs)))
+  if (N_geo==1){
+    n_obs <- length(Iobs)
+  }else{
+    n_obs <- nrow(Iobs)
+  }
+  I_predict <- array(data = 0, dim = c(Nsim,N_geo,7*week_forward+100+n_obs))
   
   fR <- sample(x = 1:nrow(Results$theta), size = NR_samples, replace = FALSE)   # samples for the posterior
   R0 <- Results$theta[fR,1:N_geo]                                         # R samples
@@ -75,9 +80,13 @@ Proj_Pois_incl_trusted <- function(Results, NR_samples, Nsim_per_samples , week_
       I0[,i] <- R0[,k]*(I0[,f:i]%*%ws[((SI$SItrunc+1)-(i-f)):(SI$SItrunc+1)])  # mean expected number of cases
     }        
     
-    I=cbind(I0, matrix( Iobs[,k], Nsim,length(Iobs[,k]),byrow = TRUE) ,matrix(0,Nsim,7*week_forward))      
+    if (N_geo==1){
+      I=cbind(I0, matrix( Iobs, Nsim, n_obs,byrow = TRUE) ,matrix(0,Nsim,7*week_forward)) 
+    }else{
+      I=cbind(I0, matrix( Iobs[,k], Nsim, n_obs,byrow = TRUE) ,matrix(0,Nsim,7*week_forward)) 
+    }
     # for the time window and beyond get the mean expect number of cases day after day and draw from Poisson
-    for (i in (100+nrow(Iobs)+1):ncol(I)){
+    for (i in (100+n_obs+1):ncol(I)){
       lambda=I[,(i-SI$SItrunc):i]%*%ws
       I[,i]=rpois(Nsim,R0[,k]*lambda)
     }
