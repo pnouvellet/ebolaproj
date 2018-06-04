@@ -40,6 +40,7 @@ library(projections)
 library(epitrix)
 library(EpiEstim)
 library(Hmisc)
+library(ebolaproj)
 ```
 
 
@@ -54,7 +55,7 @@ We then keep only the last 28 days (4 weeks) of simulation which will be our tim
 
 Finally, we extract incidence for 10 locations only, making sure the incidence during that period is greater than 0.
 
-```{r simul, eval = TRUE, echo=FALSE}
+```{r simul, eval = FALSE, echo=FALSE}
 I0 <- 5
 dat=rep(1,I0)
 ## simulate basic epicurvedat <- c(0, 2, 2, 3, 3, 5, 5, 5, 6, 6, 6, 6)
@@ -106,6 +107,7 @@ library(ebolaproj)
 load(file = 'simulated.RData')
 
 dim(incidence)
+set.seed(1)
 ```
 
 NOTE: incidence dataframe includes:
@@ -267,12 +269,17 @@ If the time window was 4 weeks, and we want to project for 4 weeks after that, t
 
 ```{r forward, eval=TRUE , echo= TRUE}
 # forward projection
+
+start_time <- Sys.time()
 I_pred <- Proj_Pois(Results = res ,
-                   NR_samples = 10, 
-                   Nsim_per_samples = 10,
+                   NR_samples = 100, 
+                   Nsim_per_samples = 100,
                    week_forward = 4+4,
                    N_geo = N_geo,
                    SI = SI)
+end_time <- Sys.time()
+end_time - start_time
+
 # function to project forward, see Rscript/useful_functions.R
 # needs the parameters estimated (Results)
 # number of simulations
@@ -283,7 +290,29 @@ I_pred <- Proj_Pois(Results = res ,
 temp <- as.matrix(t(I_pred[,1,101:156]))
 I2 <- build_projections(t(temp), dates = NULL, cumulative = FALSE)
 ```
+```{r forward2, eval=FALSE , echo= TRUE}
+# forward projection
 
+start_time <- Sys.time()
+I_pred <- Proj_Pois2(Results = res ,
+                   NR_samples = 100, 
+                   Nsim_per_samples = 100,
+                   week_forward = 4+4,
+                   N_geo = N_geo,
+                   SI = SI)
+end_time <- Sys.time()
+end_time - start_time
+
+# function to project forward, see Rscript/useful_functions.R
+# needs the parameters estimated (Results)
+# number of simulations
+# week_forward: number of week projected from the START of the time window, SO: includes the period of time
+# for which we have data!!! e.g. if we have 2 weeks of data and want to project for the 4 weeks 
+# after that, week_forward should be 6.
+# require number of locations + serial interval
+temp <- as.matrix(t(I_pred[,1,101:156]))
+I2 <- build_projections(t(temp), dates = NULL, cumulative = FALSE)
+```
 We finally plot the projections:
 
 ```{r plotproj, eval=TRUE, echo = TRUE}
@@ -305,6 +334,69 @@ for(i in 1:N_geo){
 
 
 ```
+
+```{r check_rep}
+load('prechange.Rdata')
+
+prod(dim(I_pred)) == sum(I_pred == pre$I_pred)
+```
+
+
+```{r save, eval= FALSE}
+pre <- list(res=res,I_pred=I_pred)
+save(pre,file='prechange.Rdata')
+
+```
+
+
+```{r forward3, eval=FALSE , echo= TRUE}
+# forward projection
+
+start_time <- Sys.time()
+I_pred <- Proj_NegBin(Results = res ,Overdispersion = 0.02,
+                   NR_samples = 100, 
+                   Nsim_per_samples = 100,
+                   week_forward = 4+4,
+                   N_geo = N_geo,
+                   SI = SI)
+end_time <- Sys.time()
+end_time - start_time
+
+# function to project forward, see Rscript/useful_functions.R
+# needs the parameters estimated (Results)
+# number of simulations
+# week_forward: number of week projected from the START of the time window, SO: includes the period of time
+# for which we have data!!! e.g. if we have 2 weeks of data and want to project for the 4 weeks 
+# after that, week_forward should be 6.
+# require number of locations + serial interval
+temp <- as.matrix(t(I_pred[,1,101:156]))
+I2 <- build_projections(t(temp), dates = NULL, cumulative = FALSE)
+```
+
+```{r forward4, eval=FALSE , echo= TRUE}
+# forward projection
+
+start_time <- Sys.time()
+I_pred <- Proj_NegBin2(Results = res ,Overdispersion = 0.02,
+                   NR_samples = 100, 
+                   Nsim_per_samples = 100,
+                   week_forward = 4+4,
+                   N_geo = N_geo,
+                   SI = SI)
+end_time <- Sys.time()
+end_time - start_time
+
+# function to project forward, see Rscript/useful_functions.R
+# needs the parameters estimated (Results)
+# number of simulations
+# week_forward: number of week projected from the START of the time window, SO: includes the period of time
+# for which we have data!!! e.g. if we have 2 weeks of data and want to project for the 4 weeks 
+# after that, week_forward should be 6.
+# require number of locations + serial interval
+temp <- as.matrix(t(I_pred[,1,101:156]))
+I2 <- build_projections(t(temp), dates = NULL, cumulative = FALSE)
+```
+
 
 # About this document
 

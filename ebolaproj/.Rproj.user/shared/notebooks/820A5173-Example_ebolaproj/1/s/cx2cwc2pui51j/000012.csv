@@ -1,1 +1,0 @@
-"0","for (i in 1:N_geo) plot(res$theta[,N_geo+i])        # of initial conditions"
