@@ -17,7 +17,7 @@
 LikeNb<-function(lambda,I,R0,over_disp){
   R <- R0%*%matrix(1,1,ncol(I))
   # L <- sum(rowSums(-R*lambda+I*log(R*lambda),na.rm=TRUE),na.rm=TRUE) # poisson likelihood (or bits we are interested in!)
-  L <- sum(dnbinom(x = I, size = over_disp, mu = R*lambda, log = TRUE) , na.rm = TRUE)
+  L <- sum(dnbinom(x = I, size = over_disp*lambda, mu = R*lambda, log = TRUE) , na.rm = TRUE)
   return(L)
 }
 

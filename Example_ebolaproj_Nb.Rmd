@@ -57,7 +57,7 @@ Finally, we extract incidence for 10 locations only, making sure the incidence d
 
 ```{r simul, eval = FALSE, echo=FALSE}
 I0 <- 5
-dat=rep(1,I0)
+dat=rep(5,I0)
 ## simulate basic epicurvedat <- c(0, 2, 2, 3, 3, 5, 5, 5, 6, 6, 6, 6)
 i <- incidence::incidence(dat)  # 20 cases to start with
 # plot(i)
@@ -72,18 +72,20 @@ CV_SI <- 9.6/14.2 # from http://www.nejm.org/doi/suppl/10.1056/NEJMc1414992/supp
 # si$d(0:30) # problem of first one
 SItrunc <- 40
 # serial distribution
-SI_Distr <- sapply(0:SItrunc, function(e) EpiEstim::DiscrSI(e,mean_SI,mean_SI*CV_SI) )
+SI_Distr <- EpiEstim::discr_si(0:SItrunc,mean_SI,mean_SI*CV_SI) 
 SI_Distr <- SI_Distr / sum(SI_Distr)
 
 #simulate 40 days
 R <- 1.5
-over_d <- 0.03
+over_d <- .52
 # pred <- projections::project(x = i, R = rep(R,2), R_fix_within = TRUE,
-#                 si = SI_Distr, n_days = 150, n_sim = 50, model = "poisson" )
+#                 si = SI_Distr, n_days = 100, n_sim = 2e2, model = "poisson" )
 pred <- projections::project(x = i, R = rep(R,2), R_fix_within = TRUE,
-                si = SI_Distr, n_days = 150, n_sim = 1e2, model = "negbin" , size = over_d)
+                si = SI_Distr, n_days = 100, n_sim = 2e2, model = "negbin" , size = over_d)
 temp <- as.matrix(pred)
-
+cum_inc <- colSums(temp)
+cum_inc
+mean(cum_inc)
 # keep incidence of last 20 days
 incidence <- data.frame(date = as.Date('01/05/2018',format='%d/%m/%Y')+seq(0,4*7-1),
                         I = tail(temp,4*7))
@@ -91,6 +93,7 @@ f <- which(colSums(incidence[,-1])==0) # remove location with 0 cases in last 20
 if (length(f)>0) incidence <- incidence[,-(f+1)]
 
 incidence <- incidence[,1:11]
+colSums(incidence[,-1])
 # I_cum_hist <- colSums(head(pred,150-20))
 
 save(incidence,R, file = 'simulated_nb.RData')
@@ -107,10 +110,14 @@ rm(list = as.vector(ls()))
 library(ebolaproj)
 
 # load sample data to check
-load(file = 'simulated.RData')
-
+load(file = 'simulated_nb.RData')
+over_d <- 0.52
 dim(incidence)
 set.seed(1)
+
+plot((incidence$I.6))
+matplot(incidence[,-1])
+
 ```
 
 NOTE: incidence dataframe includes:
@@ -137,9 +144,9 @@ rep <- 2e3
 sigma_prop <- rep(0.1,N_geo*2)         # initial proposal variances (they are now tuned!)
 # initial incidence conditions 
 if ( N_geo>1 ){
-  mu0 <- colMeans(incidence[,-1])*SI$SItrunc  
+  mu0 <- colMeans(incidence[,-1])*mean_SI  
 }else{
-  mu0 <- mean(incidence[,-1])*SI$SItrunc  
+  mu0 <- mean(incidence[,-1])*mean_SI  
 }
 # initially, we assume R=1 and choose initial condition accordingly, i.e. with mu0 case and R=1 
 # we expect the number of daily cases to stabilised at the mean of the observed incidence in the 
@@ -179,7 +186,7 @@ res <- MCMC_full(I = incidence,
                  SI = SI,
                  mu0 = mu0,
                  repli_adapt = 10,
-                 within_iter = rep/10)
+                 within_iter = rep/10, over_disp = over_d)
 ```
 
 ```{r breakdown, echo=FALSE, eval=FALSE}
@@ -261,6 +268,83 @@ lines(c(1,N_geo),rep(R,2), col = 'red')
 
 
 ```
+
+# check with poisson
+
+
+We then run the MCMC:
+
+```{r MCMC, eval=TRUE, echo=TRUE}
+
+res <- MCMC_full(I = incidence,
+                 N_geo = N_geo,
+                 iter = rep,
+                 theta0 = theta0,
+                 s = sigma_prop,
+                 SI = SI,
+                 mu0 = mu0,
+                 repli_adapt = 10,
+                 within_iter = rep/10)
+```
+
+We can then check the traces of parameters and likelihood, acceptances, and get quantile for Rt.
+
+```{r check, echo=TRUE, eval=TRUE}
+
+Acc <- colSums(diff(res$theta)!=0)/rep          # acceptance rate (should be close to .2)
+Acc
+# plot traces
+plot(res$logL[,1])                                  # of likelihood
+layout(matrix(1:N_geo,2,ceiling(N_geo/2),byrow = TRUE))
+for (i in 1:N_geo) plot(res$theta[,i])              # of R's
+for (i in 1:N_geo) plot(res$theta[,N_geo+i])        # of initial conditions
+
+if (N_geo>1){
+  R_est <- apply(res$theta[,1:N_geo],2,
+                 quantile,c(.5,.025,.975))   # median and 95%CrI of Rs by locations
+  I0_est <- apply(res$theta[,(N_geo+1):(2*N_geo)],2,
+                  quantile,c(.5,.025,.975))   # median and 95%CrI of I0 
+  
+}else{
+  R_est <- quantile(res$theta[,1],c(.5,.025,.975))
+  I0_est <- quantile(res$theta[,2],c(.5,.025,.975))
+}
+save.image('test_on_simulation1.RData')             # saving so far
+
+```
+
+We Check the estimates:
+
+```{r checkest, echo = TRUE, eval = TRUE}
+layout(matrix(1:2,1,2,byrow = TRUE))
+errbar(1:N_geo,R_est[1,],R_est[2,],R_est[3,],
+       xlab = 'location', ylab = 'R',ylim = c(0,3), bty = 'n')
+lines(c(1,N_geo),rep(R,2), col = 'red')
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Project forward
 

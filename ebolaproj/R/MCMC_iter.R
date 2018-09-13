@@ -41,7 +41,7 @@ MCMC_iter <- function(incidence,N_geo,iter,theta0,s,SI,mu0,over_disp = NA){
   if (is.na(over_disp)){
     L1 <- Like1(lambda,t(I),theta0[1:N_geo])
   }else{
-    L1 <- LikeNb(lambda,t(I),theta0[1:N_geo],over_disp = over_disp)
+    L1 <- LikeNb(lambda = lambda, I = t(I), R0 = theta0[1:N_geo],over_disp = over_disp)
   }
   L[1,] <- L1
   thetas[1,] <- theta0       
@@ -59,7 +59,7 @@ MCMC_iter <- function(incidence,N_geo,iter,theta0,s,SI,mu0,over_disp = NA){
       lambdaT <- lambda_fct(param = Ts , I = t(I), N_l = N_geo ,
                             ws = rev(SI$dist) , SItrunc = SI$SItrunc)
       # get the likelihood for proposae value
-      Lint <- Like1(lambdaT,t(I),Ts[1:N_geo])
+      # Lint <- Like1(lambdaT,t(I),Ts[1:N_geo])
       if (is.na(over_disp)){
         Lint <- Like1(lambdaT,t(I),Ts[1:N_geo])
       }else{
