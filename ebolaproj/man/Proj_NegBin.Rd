@@ -4,8 +4,8 @@
 \alias{Proj_NegBin}
 \title{Project forward}
 \usage{
-Proj_NegBin(Results, Overdispersion, NR_samples, Nsim_per_samples, week_forward,
-  N_geo, SI)
+Proj_NegBin(Results, Overdispersion, NR_samples, Nsim_per_samples,
+  week_forward, N_geo, SI)
 }
 \arguments{
 \item{Results}{list conatining the results of the MCMC (e.g. from MCMC_RtProj function), contains

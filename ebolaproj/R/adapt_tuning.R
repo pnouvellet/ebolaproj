@@ -22,7 +22,7 @@
 # within_iter: iteration for evaluate the accpetance with new proposal variances
 # sigma: original variance to start with
 # others: as in MCMC_iter
-adapt_tuning <- function(repli,I,N_geo,within_iter,theta0,sigma,SI,mu0){
+adapt_tuning <- function(repli,I,N_geo,within_iter,theta0,sigma,SI,mu0,over_disp = NA){
   
   new_sigma <- sigma
   for (i in 1:repli){
@@ -33,7 +33,8 @@ adapt_tuning <- function(repli,I,N_geo,within_iter,theta0,sigma,SI,mu0){
                      theta0 = theta0,
                      s = new_sigma, 
                      SI = SI, 
-                     mu0 = mu0)
+                     mu0 = mu0, 
+                     over_disp = over_disp)
     
     # colSums(diff(res$theta)!=0)/(within_iter-1) 
     # tune the variance according to accpetance

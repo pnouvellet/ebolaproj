@@ -4,7 +4,8 @@
 \alias{MCMC_full}
 \title{MCMC iterate}
 \usage{
-MCMC_full(I, N_geo, iter, theta0, s, SI, mu0, repli_adapt, within_iter)
+MCMC_full(I, N_geo, iter, theta0, s, SI, mu0, repli_adapt, within_iter,
+  over_disp = NA)
 }
 \arguments{
 \item{I}{the incidence for the time window during which we assume Rt to be constant.

@@ -29,7 +29,7 @@
 #' @export
 #' 
 
-MCMC_full <- function(I,N_geo,iter,theta0,s,SI,mu0,repli_adapt,within_iter){
+MCMC_full <- function(I,N_geo,iter,theta0,s,SI,mu0,repli_adapt,within_iter, over_disp = NA){
  
   res0 <- adapt_tuning(repli = repli_adapt,
                        I = I,
@@ -38,7 +38,8 @@ MCMC_full <- function(I,N_geo,iter,theta0,s,SI,mu0,repli_adapt,within_iter){
                        theta0 = theta0,
                        sigma = s,
                        SI = SI,
-                       mu0 = mu0)
+                       mu0 = mu0, 
+                       over_disp = over_disp)
   # adaptative tuning bit: we run an MCMC with rep/10 iterations, then
   # adjust the proposal variance to reach 0.2
   # do again using parameter value from the last iteration of the previous MCMC
@@ -55,7 +56,8 @@ MCMC_full <- function(I,N_geo,iter,theta0,s,SI,mu0,repli_adapt,within_iter){
                    theta0 = res0$theta0,
                    s = res0$sigma,
                    SI = SI,
-                   mu0 = mu0)
+                   mu0 = mu0,
+                   over_disp = over_disp)
   # run the MCMC to sample posterior of R and initial coniditions at each location
   # FYI: this is called internally by adapt_tuning
   # see Rscript/MCMC_Rt_2018.R for full function

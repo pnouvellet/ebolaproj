@@ -1,6 +1,6 @@
 #' get likelihood  
 #'
-#' get likelihood  
+#' get Poisson likelihood  
 #' internal to the MCMC
 #' 
 #' @param lambda: 'force of infection' matrix (incidence weighted by serial interval),

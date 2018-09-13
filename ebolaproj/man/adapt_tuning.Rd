@@ -4,7 +4,8 @@
 \alias{adapt_tuning}
 \title{adaptative tuning}
 \usage{
-adapt_tuning(repli, I, N_geo, within_iter, theta0, sigma, SI, mu0)
+adapt_tuning(repli, I, N_geo, within_iter, theta0, sigma, SI, mu0,
+  over_disp = NA)
 }
 \arguments{
 \item{repli}{number of time the variance of the proposal is tuned (10 tends to be ok)}

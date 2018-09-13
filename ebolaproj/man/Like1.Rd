@@ -15,7 +15,7 @@ Like1(lambda, I, R0)
 column number of days, row: number of locations}
 }
 \description{
-get likelihood  
+get Poisson likelihood  
 internal to the MCMC
 }
 \details{

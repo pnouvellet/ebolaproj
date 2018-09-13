@@ -4,8 +4,8 @@
 \alias{Proj_NegBin_incl_trusted}
 \title{Project forward}
 \usage{
-Proj_NegBin_incl_trusted(Results, Overdispersion, NR_samples, Nsim_per_samples,
-  week_forward, N_geo, SI, Iobs)
+Proj_NegBin_incl_trusted(Results, Overdispersion, NR_samples,
+  Nsim_per_samples, week_forward, N_geo, SI, Iobs)
 }
 \arguments{
 \item{Results}{list conatining the results of the MCMC (e.g. from MCMC_RtProj function), contains
