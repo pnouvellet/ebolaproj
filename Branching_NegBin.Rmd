@@ -63,16 +63,16 @@ i <- incidence::incidence(dat)  # 20 cases to start with
 # plot(i)
 
 # SI
-mean_SI <- 14.2
-CV_SI <- 9.6/14.2 # from http://www.nejm.org/doi/suppl/10.1056/NEJMc1414992/suppl_file/nejmc1414992_
+# mean_SI <- 14.2
+# CV_SI <- 9.6/14.2 # from http://www.nejm.org/doi/suppl/10.1056/NEJMc1414992/suppl_file/nejmc1414992_
 # params <- gamma_mucv2shapescale(mean_SI, CV_SI)
 # si <- distcrete("gamma", interval = 1L,
 #                   shape = params$shape,
 #                   scale = params$scale, w = 0.5)
 # si$d(0:30) # problem of first one
-SItrunc <- 40
+SItrunc <- 2
 # serial distribution
-SI_Distr <- EpiEstim::discr_si(0:SItrunc,mean_SI,mean_SI*CV_SI) 
+SI_Distr <- c(0,1)
 SI_Distr <- SI_Distr / sum(SI_Distr)
 
 #simulate 40 days
@@ -80,38 +80,76 @@ R <- 1.5
 over_d <- .52
 # pred <- projections::project(x = i, R = rep(R,2), R_fix_within = TRUE,
 #                 si = SI_Distr, n_days = 100, n_sim = 2e2, model = "poisson" )
+n <- 2e2
+n_t <- 5
 pred <- projections::project(x = i, R = rep(R,2), R_fix_within = TRUE,
-                si = SI_Distr, n_days = 100, n_sim = 2e2, model = "negbin" , size = over_d)
+                si = SI_Distr, n_days = n_t, n_sim = n, model = "negbin" , size = over_d)
 temp <- as.matrix(pred)
 cum_inc <- colSums(temp)
-cum_inc
-mean(cum_inc)
+# cum_inc
+# mean(cum_inc)
 # keep incidence of last 20 days
-incidence <- data.frame(date = as.Date('01/05/2018',format='%d/%m/%Y')+seq(0,4*7-1),
-                        I = tail(temp,4*7))
-f <- which(colSums(incidence[,-1])==0) # remove location with 0 cases in last 20 days
-if (length(f)>0) incidence <- incidence[,-(f+1)]
+incidence <- data.frame(date = as.Date('01/05/2018',format='%d/%m/%Y')+seq(0,5-1),
+                        I = tail(temp,5))
+# f <- which(colSums(incidence[,-1])==0) # remove location with 0 cases in last 20 days
+# if (length(f)>0) incidence <- incidence[,-(f+1)]
 
-incidence <- incidence[,1:11]
-colSums(incidence[,-1])
 # I_cum_hist <- colSums(head(pred,150-20))
+matplot(incidence[2:30])
 
-# save(incidence,R, file = 'simulated_nb.RData')
+incidence <- as.matrix(incidence[,2:n])
+ratio <- incidence[2:(n_t),]/incidence[1:(n_t-1),]
+mean(ratio,na.rm = TRUE)
+
 ```
+
+```{r}
+
+Xt <- 10
+x <- rnbinom(n = 1e4, mu = R*Xt, size = 0.5)
+
+# mean(x)/Xt
+mean(x)^2/((var(x)-mean(x)))
+# sd(x)/mean(x)
+# var(x)
+# Xt*R+Xt^2*R^2/.5
+# mean(x)+mean(x)^2/.5
+
+### underrepot
+p <- 0.75
+x_obs <- rbinom(n = 1e4, size = x, prob = p)
+
+Xt_obs <- Xt*p
+# mean(x_obs)/Xt_obs
+mean(x_obs)^2/((var(x_obs)-mean(x_obs)))
+
+# sd(x_obs)/mean(x_obs)
+
+# 1+R/.5
+```
+
+```{r}
+hist(x_obs,col=rgb(1,0,0,0.5))
+hist(rnbinom(n = 1e4, mu = R*Xt*p, size = 0.5),add=TRUE,col=rgb(0,0,1,0.5))
+
+
+
+```
+
 
 
 # Infer reproduction number
 
 First we load the package and data to test:
 ```{r library2, eval = TRUE, echo=TRUE}
-# rm(list = as.vector(ls()))
+rm(list = as.vector(ls()))
 
 # devtools::load_all('.')
 library(ebolaproj)
 
 # load sample data to check
-# load(file = 'simulated_nb.RData')
-# over_d <- 0.52
+load(file = 'simulated_nb.RData')
+over_d <- 0.52
 dim(incidence)
 set.seed(1)
 
@@ -140,7 +178,7 @@ SI <- SI_gamma_dist_EpiEstim(mu = mean_SI,
                             SItrunc = 40)
 # final number of MCMC iterations (the whole thing, 
 # here with 10 locations runs in ~3.5mins) )
-rep <- 1e4 #2e3                             
+rep <- 2e3                             
 sigma_prop <- rep(0.1,N_geo*2)         # initial proposal variances (they are now tuned!)
 # initial incidence conditions 
 if ( N_geo>1 ){
