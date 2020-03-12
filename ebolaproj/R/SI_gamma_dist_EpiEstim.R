@@ -8,8 +8,8 @@
 #' @export
 #' 
 # SI
-SI_gamma_dist_EpiEstim <- function(mu,cv,SItrunc){
-  SI_Distr <- sapply(0:SItrunc, function(e) EpiEstim::DiscrSI(e,mu,mu*cv) )
+SI_gamma_dist_EpiEstim <- function(mu,si_std,SItrunc){
+  SI_Distr <- EpiEstim::discr_si(seq(0, SItrunc), mu, si_std) # sapply(0:SItrunc, function(e) EpiEstim::DiscrSI(e,mu,mu*cv) )
   SI_Distr <- SI_Distr / sum(SI_Distr)
   return(list(dist = SI_Distr, SItrunc = SItrunc))
 }

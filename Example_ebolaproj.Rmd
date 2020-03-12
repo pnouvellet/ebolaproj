@@ -125,8 +125,8 @@ N_geo <- ncol(incidence)-1
 # Serial interval 
 mean_SI <- 14.2
 CV_SI <- 9.6/14.2 # from http://www.nejm.org/doi/suppl/10.1056/NEJMc1414992/suppl_file/nejmc1414992_
-SI <- SI_gamma_dist_EpiEstim(mu = mean_SI,
-                            cv = CV_SI, 
+SI <- SI_gamma_dist_EpiEstim(mu = mean_SI, 
+                             si_std  = CV_SI * mean_SI, 
                             SItrunc = 40)
 # final number of MCMC iterations (the whole thing, 
 # here with 10 locations runs in ~3.5mins) )
@@ -168,6 +168,7 @@ We then run the MCMC:
 
 ```{r MCMC, eval=TRUE, echo=TRUE}
 
+rep <- 1e3
 res <- MCMC_full(I = incidence,
                  N_geo = N_geo,
                  iter = rep,
