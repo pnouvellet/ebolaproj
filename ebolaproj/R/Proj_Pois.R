@@ -12,8 +12,8 @@
 #' @param Nsim_per_samples integer, number of of simulation per Rt sampled (NR_samples). the total number of 
 #'                           simulated trajectory is (NR_samples x Nsim_per_samples)
 #' 
-#' @param week_forward integer, number of week simulated forward - this include the time window used for inference, so
-#'                  if 2 weeks were used to infer Rt, and we want projection 2 weeks after that, week_forward=4
+#' @param day_forward integer, number of day simulated forward - this include the time window used for inference, so
+#'                  if 2 days were used to infer Rt, and we want projection 2 day after that, day_forward=4
 #'                  
 #' @param N_geo integer, number of locations
 #' 
@@ -24,17 +24,17 @@
 #' 
 # agregate an incidence for periods of delta days, it cuts the most recent days if incidence has not the exact number of days require
 # 
-Proj_Pois <- function(Results, NR_samples, Nsim_per_samples , week_forward, N_geo, SI){
+Proj_Pois <- function(Results, NR_samples, Nsim_per_samples , day_forward, N_geo, SI){
   
   if (NR_samples>nrow(Results$theta)) warning('Nsim must be smaller than size of posterior samples')
   
   Nsim <- NR_samples * Nsim_per_samples
   # allocate output
-  I_predict <- array(data = 0, dim = c(Nsim,N_geo,7*week_forward+100))
+  I_predict <- array(data = 0, dim = c(Nsim,N_geo,day_forward+100))
   
   fR <- sample(x = 1:nrow(Results$theta), size = NR_samples, replace = FALSE)   # samples for the posterior
   R0 <- Results$theta[fR,1:N_geo]                                         # R samples
-  Ini <- Results$theta[fR,(N_geo+1):(2*N_geo)]                            # initial conditions samples
+  Ini <- exp(Results$theta[fR,(N_geo+1):(2*N_geo)])                            # initial conditions samples
   if (N_geo == 1){
     R0 <- matrix(R0,Nsim)
     Ini <- matrix(Ini,Nsim)
@@ -72,7 +72,7 @@ Proj_Pois <- function(Results, NR_samples, Nsim_per_samples , week_forward, N_ge
       I0[,i] <- R0[,k]*(I0[,f:i]%*%ws[((SI$SItrunc+1)-(i-f)):(SI$SItrunc+1)])  # mean expected number of cases
     }        
     
-    I=cbind(I0,matrix(0,Nsim,7*week_forward))      
+    I=cbind(I0,matrix(0,Nsim,day_forward))      
     # for the time window and beyond get the mean expect number of cases day after day and draw from Poisson
     for (i in (100+1):ncol(I)){
       lambda=I[,(i-SI$SItrunc):i]%*%ws
@@ -80,9 +80,12 @@ Proj_Pois <- function(Results, NR_samples, Nsim_per_samples , week_forward, N_ge
     }
     I_predict[,k,] <- I
   }
+  I_predict2 <- list()
+  for (i in 1:N_geo){
+    I_predict2[[i]] <- I_predict[,i,101:dim(I_predict)[3]]
+  }
   
-  
-  return(I_predict)
+  return(I_predict2)
   
   
 }

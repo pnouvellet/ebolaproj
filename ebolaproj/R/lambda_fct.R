@@ -23,10 +23,12 @@ lambda_fct<-function(param, I, N_l, ws, SItrunc){
   
   # reconstruct expected daily cases in the past
   I0 <- matrix(0,N_l,100)
-  I0[,1] <- param[(N_l+1):(2*N_l)]/param[(1):(N_l)]
+  # I0[,1] <- param[(N_l+1):(2*N_l)] #/ (1-param[(1):(N_l)])
+  I0[,1] <- exp(param[(N_l+1):(2*N_l)] )  #/ (1-param[(1):(N_l)])
   for (i in 2:100){
     f <- max(c(1,(i-SItrunc)))
     I0[,i] <- param[1:N_l]*(I0[,f:i]%*%ws[((SItrunc+1)-(i-f)):(SItrunc+1)])
+    # I0[,i] <- param[1:N_l]*eigenMapMatMult(I0[,f:i],ws[((SItrunc+1)-(i-f)):(SItrunc+1)])
   }
   
   I_full <- cbind(I0,I)

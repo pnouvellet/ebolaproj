@@ -54,7 +54,11 @@ MCMC_iter <- function(incidence,N_geo,iter,theta0,s,SI,mu0,over_disp = NA){
       Ts <- theta0
       lambdaT <- lambda
       # propose new parameter j
-      Ts[j] <- Ts[j]*exp(s[j]*rnorm(1,0,1))
+      if (j <= N_geo){
+        Ts[j] <- Ts[j]*exp(s[j]*rnorm(1,0,1))
+      }else{
+        Ts[j] <- Ts[j]+(s[j]*rnorm(1,0,1))
+      }
       # get the new 'force of infection'
       lambdaT <- lambda_fct(param = Ts , I = t(I), N_l = N_geo ,
                             ws = rev(SI$dist) , SItrunc = SI$SItrunc)
@@ -71,7 +75,7 @@ MCMC_iter <- function(incidence,N_geo,iter,theta0,s,SI,mu0,over_disp = NA){
       if (j <= N_geo){
         r <- exp(Lint-L1)*Ts[j]/theta0[j]
       }else{
-        r <- exp(Lint-L1)*Ts[j]/theta0[j]*exp(1/mu0[j-N_geo]*(theta0[j]-Ts[j])) # with weak exponential prior
+        r <- exp(Lint-L1)   #*exp(1/mu0[j-N_geo]*(theta0[j]-Ts[j])) # with weak exponential prior
       }
       
       # accept or reject

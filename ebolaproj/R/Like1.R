@@ -15,7 +15,7 @@
 #' 
 
 Like1<-function(lambda,I,R0){
-  R <- R0%*%matrix(1,1,ncol(I))
+  R <- matrix(R0,length(R0),ncol(I))
   L <- sum(rowSums(-R*lambda+I*log(R*lambda),na.rm=TRUE),na.rm=TRUE) # poisson likelihood (or bits we are interested in!)
   return(L)
 }

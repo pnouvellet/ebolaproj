@@ -4,7 +4,7 @@ author: "Pierre Nouvellet & Anne Cori"
 date: '2018-05-24'
 ---
   
-  ```{r options, include = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+```{r options, include = FALSE, message = FALSE, warning = FALSE, error = FALSE}
 library(knitr)
 
 opts_chunk$set(collapse = TRUE)
@@ -102,6 +102,7 @@ rm(list = as.vector(ls()))
 
 # devtools::load_all('.')
 library(ebolaproj)
+library(Hmisc)
 
 # load sample data to check
 load(file = 'simulated.RData')
@@ -134,9 +135,9 @@ rep <- 2e2
 sigma_prop <- rep(0.1,N_geo*2)         # initial proposal variances (they are now tuned!)
 # initial incidence conditions 
 if ( N_geo>1 ){
-  mu0 <- colMeans(incidence[,-1])*mean_SI 
+  mu0 <- colMeans(incidence[,-1])*SI$SItrunc  
 }else{
-  mu0 <- mean(incidence[,-1])*mean_SI  
+  mu0 <- mean(incidence[,-1])*SI$SItrunc  
 }
 # initially, we assume R=1 and choose initial condition accordingly, i.e. with mu0 case and R=1 
 # we expect the number of daily cases to stabilised at the mean of the observed incidence in the 
@@ -245,7 +246,7 @@ if (N_geo>1){
   R_est <- quantile(res$theta[,1],c(.5,.025,.975))
   I0_est <- quantile(res$theta[,2],c(.5,.025,.975))
 }
-save.image('test_on_simulation1.RData')             # saving so far
+# save.image('test_on_simulation1.RData')             # saving so far
 
 ```
 
